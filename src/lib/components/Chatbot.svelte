@@ -1,28 +1,31 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	interface Message {
 		role: 'user' | 'assistant';
 		content: string;
 	}
 
-	let isOpen: boolean = false;
-	let messages: Message[] = [];
-	let inputMessage: string = '';
-	let isLoading: boolean = false;
-	let chatContainer: HTMLDivElement | null = null;
+	// Reaktivní stavové proměnné pomocí $state
+	let isOpen = $state(false);
+	let messages = $state<Message[]>([
+		{
+			role: 'assistant',
+			content:
+				'Ahoj! Jsem AI asistent a pomůžu ti s učením. Máš nějakou otázku k učebnici nebo pracovnímu sešitu?'
+		}
+	]);
+	let inputMessage = $state('');
+	let isLoading = $state(false);
+	// svelte-ignore non_reactive_update
+		let chatContainer: HTMLDivElement | null = null;
 
-	onMount(() => {
-		// Přidej úvodní zprávu
-		messages = [
-			{
-				role: 'assistant',
-				content:
-					'Ahoj! Jsem AI asistent a pomůžu ti s učením. Máš nějakou otázku k učebnici nebo pracovnímu sešitu?'
-			}
-		];
+	// Reaktivní inicializace pro první zprávu
+	$effect(() => {
+		if (messages.length === 1 && messages[0].role === 'assistant') {
+			console.log('Chatbot je připraven k použití');
+		}
 	});
 
+	// Funkce pro odeslání zprávy
 	async function sendMessage(): Promise<void> {
 		if (!inputMessage.trim() || isLoading) return;
 
@@ -41,7 +44,6 @@
 		}, 100);
 
 		try {
-			// Získej pouze zprávy bez system message (ten se přidá na serveru)
 			const messagesToSend = messages.map((msg) => ({
 				role: msg.role,
 				content: msg.content
@@ -67,7 +69,6 @@
 		} catch (error: any) {
 			console.error('Error sending message:', error);
 
-			// Zobraz konkrétní chybovou zprávu
 			let errorMessage = 'Omlouvám se, došlo k chybě. Zkuste to prosím znovu.';
 
 			if (error.message) {
@@ -100,7 +101,6 @@
 			];
 		} finally {
 			isLoading = false;
-			// Scroll na konec po odpovědi
 			setTimeout(() => {
 				if (chatContainer) {
 					chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -109,6 +109,7 @@
 		}
 	}
 
+	// Funkce pro detekci stisku klávesy
 	function handleKeyPress(event: KeyboardEvent): void {
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
@@ -116,6 +117,7 @@
 		}
 	}
 
+	// Toggle pro otevření/zavření chatu
 	function toggleChat(): void {
 		isOpen = !isOpen;
 	}
@@ -123,9 +125,7 @@
 
 <div class="fixed bottom-4 right-4 z-50">
 	{#if isOpen}
-		<!-- Chat Window -->
 		<div class="bg-white rounded-lg shadow-2xl w-96 h-[600px] flex flex-col border border-gray-200">
-			<!-- Header -->
 			<div class="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
 				<div>
 					<h3 class="font-semibold text-lg">AI Asistent</h3>
@@ -153,7 +153,6 @@
 				</button>
 			</div>
 
-			<!-- Messages -->
 			<div bind:this={chatContainer} class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
 				{#each messages as message}
 					<div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}">
@@ -186,7 +185,6 @@
 				{/if}
 			</div>
 
-			<!-- Input -->
 			<div class="p-4 border-t border-gray-200 bg-white rounded-b-lg">
 				<div class="flex space-x-2">
 					<textarea
@@ -222,7 +220,6 @@
 			</div>
 		</div>
 	{:else}
-		<!-- Floating Chat Button -->
 		<button
 			onclick={toggleChat}
 			class="bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all hover:scale-110 active:scale-95"
