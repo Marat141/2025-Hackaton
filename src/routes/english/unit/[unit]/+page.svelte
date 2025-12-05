@@ -22,6 +22,7 @@
 	<article class="unit-content" data-unit={data.unit}>
 		{@html data.html}
 	</article>
+<a href="/english/unit/[unit]/flashcards">Karty</a>
 </section>
 
 <style>
