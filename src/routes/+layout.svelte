@@ -1,11 +1,9 @@
-<script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
+<script>
+	import Chatbot from '$lib/components/Chatbot.svelte';
 
 	let { children } = $props();
 </script>
 
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
-
 {@render children()}
+
+<Chatbot />

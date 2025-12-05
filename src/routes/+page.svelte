@@ -1,2 +1,4 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<div class="container mx-auto px-4 py-8">
+	<h1 class="text-4xl font-bold mb-4">Sveltee - AI Asistent pro studenty</h1>
+</div>
+<a href="/english/unit/1">English</a>
